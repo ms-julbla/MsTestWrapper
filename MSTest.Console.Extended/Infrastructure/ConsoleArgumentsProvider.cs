@@ -9,11 +9,11 @@ namespace MSTest.Console.Extended.Infrastructure
 {
     public class ConsoleArgumentsProvider : IConsoleArgumentsProvider
     {
-        private readonly string testResultFilePathRegexPattern = @".*resultsfile:(?<ResultsFilePath>[1-9A-Za-z\\:._]{1,})";
-        private readonly string testNewResultFilePathRegexPattern = @".*(?<NewResultsFilePathArgument>/newResultsfile:(?<NewResultsFilePath>[1-9A-Za-z\\:._]{1,}))";
-        private readonly string retriesRegexPattern = @".*(?<RetriesArgument>/retriesCount:(?<RetriesCount>[0-9]{1})).*";
-        private readonly string failedTestsThresholdRegexPattern = @".*(?<ThresholdArgument>/threshold:(?<ThresholdCount>[0-9]{1})).*";
-        private readonly string deleteOldFilesRegexPattern = @".*(?<DeleteOldFilesArgument>/deleteOldResultsFiles:(?<DeleteOldFilesValue>[a-zA-Z]{4,5})).*";
+        private readonly string testResultFilePathRegexPattern = @".*(?i)resultsfile(?-i):(?<ResultsFilePath>[1-9A-Za-z\\:._]{1,})";
+        private readonly string testNewResultFilePathRegexPattern = @".*(?<NewResultsFilePathArgument>/(?i)newResultsfile(?-i):(?<NewResultsFilePath>[1-9A-Za-z\\:._]{1,}))";
+        private readonly string retriesRegexPattern = @".*(?<RetriesArgument>/(?i)retriesCount(?-i):(?<RetriesCount>[0-9]{1})).*";
+        private readonly string failedTestsThresholdRegexPattern = @".*(?<ThresholdArgument>/(?i)threshold(?-i):(?<ThresholdCount>[0-9]{1})).*";
+        private readonly string deleteOldFilesRegexPattern = @".*(?<DeleteOldFilesArgument>(?i)/deleteOldResultsFiles(?-i):(?<DeleteOldFilesValue>[a-zA-Z]{4,5})).*";
         private readonly string argumentRegexPattern = @".*/(?<ArgumentName>[a-zA-Z]{1,}):(?<ArgumentValue>.*)";
 
         public ConsoleArgumentsProvider(string[] arguments)
