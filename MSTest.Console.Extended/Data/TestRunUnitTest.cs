@@ -6,7 +6,7 @@ namespace MSTest.Console.Extended.Data
     [XmlTypeAttribute(AnonymousType = true, Namespace = "http://microsoft.com/schemas/VisualStudio/TeamTest/2010")]
     public partial class TestRunUnitTest
     {
-        private TestRunUnitTestExecution executionField;
+        private TestRunUnitTestExecution[] executionsField;
 
         private TestRunUnitTestTestMethod testMethodField;
 
@@ -47,15 +47,15 @@ namespace MSTest.Console.Extended.Data
         }
 
         /// <remarks/>
-        public TestRunUnitTestExecution Execution
+        public TestRunUnitTestExecution[] Executions
         {
             get
             {
-                return this.executionField;
+                return this.executionsField;
             }
             set
             {
-                this.executionField = value;
+                this.executionsField = value;
             }
         }
 

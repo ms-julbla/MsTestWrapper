@@ -5,16 +5,12 @@ namespace MSTest.Console.Extended.Interfaces
 {
     public interface IMsTestTestRunProvider
     {
-        void UpdatePassedTests(List<TestRunUnitTestResult> passedTests, List<TestRunUnitTestResult> allTests);
+        List<string> GetNamesOfNotPassedTests(TestRun testRun);
 
-        List<TestRunUnitTestResult> GetAllPassesTests(TestRun testRun);
+        void UpdateMasterRunWithNewIteration(int iterationNumber, TestRun masterTestRun, TestRun interativeTestRun);
 
-        List<TestRunUnitTestResult> GetAllNotPassedTests(List<TestRunUnitTestResult> allTests);
+        string GenerateAdditionalArgumentsForFailedTestsRun(List<string> failedTests, string newTestResultFilePath);
 
-        void UpdateResultsSummary(TestRun testRun);
-
-        string GenerateAdditionalArgumentsForFailedTestsRun(List<TestRunUnitTestResult> failedTests, string newTestResultFilePath);
-
-        int CalculatedFailedTestsPercentage(List<TestRunUnitTestResult> failedTests, List<TestRunUnitTestResult> allTests);
+        int CalculatedFailedTestsPercentage(TestRun run);
     }
 }

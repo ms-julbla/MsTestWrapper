@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using log4net;
@@ -18,68 +19,115 @@ namespace MSTest.Console.Extended.Infrastructure
             this.log = log;
         }
 
-        public List<TestRunUnitTestResult> GetAllPassesTests(TestRun testRun)
+        /// <summary>
+        /// Update the master test run with the results of another iteration
+        /// over the failed tests
+        /// 
+        /// THIS WILL CASUE SIDE EFFECTS ON THE ITERATIVE TEST RUN
+        /// </summary>
+        /// <remarks>
+        /// Inserting an execution into a .trx file requires touching the file in three places:
+        ///    1. An Execution element must be placed in the associated master test's TestDefinition
+        ///    2. The UnitTestResult element (and associated sub-elements) must put in the master
+        ///       file's Results section
+        ///    3. A TestEntry element must be placed in the master file's TestEntries element, to link
+        ///       together the testId, exectionId, and testListId
+        /// </remarks>
+        /// <param name="masterTestRun"></param>
+        /// <param name="iterativeTestRun"></param>
+        void UpdateMasterRunWithNewIteration(TestRun masterTestRun, TestRun iterativeTestRun)
         {
-            List<TestRunUnitTestResult> results = new List<TestRunUnitTestResult>();
-            
-            results = testRun.Results.ToList().Where(x => x.outcome.Equals("Passed")).ToList();
-            return results;
+            // We'll just use the first TestList id we come across
+            //     TODO: smartly see if there is a matching test list name, and use that id on 
+            //           a test-by-test basis, so that test lists can be kept intact
+            var testListId = masterTestRun.TestLists.First().id;
+            var masterResults = masterTestRun.Results.ToList();
+            var masterTestEntries = masterTestRun.TestEntries.ToList();
+
+            // Go through all tests in the iterative run
+            foreach(var iterativeTestResult in iterativeTestRun.Results)
+            {
+                // Add <Execution testId="xxxx"> element
+                var masterTestDefinition = masterTestRun.TestDefinitions.Where(x => x.id == iterativeTestResult.testId).First();
+                TestRunUnitTestExecution execution = new TestRunUnitTestExecution();
+                execution.id = iterativeTestResult.executionId;
+                
+                var executionList = masterTestDefinition.Executions.ToList();
+                executionList.Add(execution);
+                masterTestDefinition.Executions = executionList.ToArray();
+
+                // Add the <TestResult> element (first, link up the ids correctly)
+                iterativeTestResult.testId = masterTestDefinition.id;
+                iterativeTestResult.testListId = testListId;
+                masterResults.Add(iterativeTestResult);
+
+                // Add <TestEntry testId="xxxx", executionId="yyyy", testListId="zzzz" > element
+
+                var testEntry = new TestRunTestEntry();
+                testEntry.executionId = iterativeTestResult.executionId;
+                testEntry.testId = masterTestDefinition.id;
+                testEntry.testListId = testListId;
+                masterTestEntries.Add(testEntry);
+            }
+
+            masterTestRun.TestEntries = masterTestEntries.ToArray();
+            masterTestRun.Results = masterResults.ToArray();
+
+            // TODO: Sort this
+            // TODO: Change names (or something) to clarify which iteration each test is
+            // TODO: Update total success count
         }
+
+
         
-        public void UpdatePassedTests(List<TestRunUnitTestResult> passedTests, List<TestRunUnitTestResult> allTests)
+        public List<string> GetNamesOfNotPassedTests(TestRun testRun)
         {
-            foreach (var currentTest in allTests)
-            {
-                if (passedTests.Count(x => x.testId.Equals(currentTest.testId)) > 0)
-                {
-                    currentTest.outcome = "Passed";
-                }
-            }
+            List<string> testNames = new List<string>();
+
+            testNames = testRun.Results.Where(x => !x.outcome.Equals("Passed"))
+                                       .Select(y => y.testName)
+                                       .ToList();
+            return testNames;
         }
 
-        public List<TestRunUnitTestResult> GetAllNotPassedTests(List<TestRunUnitTestResult> allTests)
-        {
-            List<TestRunUnitTestResult> results = new List<TestRunUnitTestResult>();
-            results = allTests.Where(x => !x.outcome.Equals("Passed")).ToList();
-            return results;
-        }
-      
-        public void UpdateResultsSummary(TestRun testRun)
-        {
-            testRun.ResultSummary.Counters.failed = (byte)testRun.Results.ToList().Count(x => x.outcome.Equals("Failed"));
-            testRun.ResultSummary.Counters.passed = (byte)testRun.Results.ToList().Count(x => x.outcome.Equals("Passed"));
-            if ((int)testRun.ResultSummary.Counters.passed != testRun.Results.Length)
-            {
-                testRun.ResultSummary.outcome = "Failed";
-            }
-            else
-            {
-                testRun.ResultSummary.outcome = "Passed";
-            }
-        }
-
-        public string GenerateAdditionalArgumentsForFailedTestsRun(List<TestRunUnitTestResult> failedTests, string newTestResultFilePath)
+        public string GenerateAdditionalArgumentsForFailedTestsRun(List<string> failedTestNames, string newTestResultFilePath)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append(" ");
-            foreach (var currentFailedTest in failedTests)
+            foreach (var testName in failedTestNames)
             {
-                sb.AppendFormat("/test:{0} ", currentFailedTest.testName);
-                System.Console.WriteLine("##### MSTestRetrier: Execute again {0}", currentFailedTest.testName);
-                this.log.InfoFormat("##### MSTestRetrier: Execute again {0}", currentFailedTest.testName);
+                sb.AppendFormat("/test:{0} ", testName);
+                System.Console.WriteLine("##### MSTestRetrier: Execute again {0}", testName);
+                this.log.InfoFormat("##### MSTestRetrier: Execute again {0}", testName);
             }
-            string additionalArgumentsForFailedTestsRun = string.Concat(this.consoleArgumentsProvider.ConsoleArguments, sb.ToString());
+
+            var keptConsoleArguments = this.consoleArgumentsProvider.ConsoleArguments;
+
+            // Don't include original /test parameter (else we'll end up repeating all tests!!)
+            const string testsArgRegexPattern = @".*(?<TestArgument>/(?i)test(?-i):(?<TestValue>.*))";
+            var testRex = new System.Text.RegularExpressions.Regex(testsArgRegexPattern, System.Text.RegularExpressions.RegexOptions.Singleline);
+            var match = testRex.Match(this.consoleArgumentsProvider.ConsoleArguments);
+            
+            if (match.Success)
+            {
+                keptConsoleArguments = keptConsoleArguments.Replace(match.Groups["TestArgument"].Value, string.Empty);
+            }
+
+            string additionalArgumentsForFailedTestsRun = string.Concat(keptConsoleArguments, sb.ToString());
             additionalArgumentsForFailedTestsRun = additionalArgumentsForFailedTestsRun.Replace(this.consoleArgumentsProvider.TestResultPath, newTestResultFilePath);
             additionalArgumentsForFailedTestsRun = additionalArgumentsForFailedTestsRun.TrimEnd();
             return additionalArgumentsForFailedTestsRun;
         }
 
-        public int CalculatedFailedTestsPercentage(List<TestRunUnitTestResult> failedTests, List<TestRunUnitTestResult> allTests)
+        public int CalculatedFailedTestsPercentage(TestRun run)
         {
             double result = 0;
-            if (allTests.Count > 0)
+
+            if (run.Results.Length > 0)
             {
-                result = ((double)failedTests.Count / (double)allTests.Count) * 100;
+                var failedTests = this.GetNamesOfNotPassedTests(run);
+
+                result = ((double)failedTests.Count / (double)run.Results.Length) * 100;
             }
             
             return (int)result;

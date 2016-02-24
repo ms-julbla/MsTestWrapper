@@ -7,6 +7,7 @@ namespace MSTest.Console.Extended.Data
     public partial class TestRunUnitTestExecution
     {
         private string idField;
+        private byte timeoutField;
 
         /// <remarks/>
         [XmlAttributeAttribute]
@@ -19,6 +20,19 @@ namespace MSTest.Console.Extended.Data
             set
             {
                 this.idField = value;
+            }
+        }
+
+        [XmlAttributeAttribute]
+        public byte timeout
+        {
+            get
+            {
+                return this.timeoutField;
+            }
+            set
+            {
+                this.timeoutField = value;
             }
         }
     }

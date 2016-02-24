@@ -32,6 +32,7 @@ namespace MSTest.Console.Extended.Infrastructure
             processStartInfo.RedirectStandardOutput = true;
             processStartInfo.RedirectStandardError = true;
             processStartInfo.UseShellExecute = false;
+            processStartInfo.WorkingDirectory = System.IO.Directory.GetCurrentDirectory();
             this.CurrentProcess.StartInfo = processStartInfo;
             this.CurrentProcess.OutputDataReceived += (sender, args) =>
             {

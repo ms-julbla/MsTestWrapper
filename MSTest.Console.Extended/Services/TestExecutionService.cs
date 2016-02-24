@@ -35,44 +35,48 @@ namespace MSTest.Console.Extended.Services
         public int ExecuteWithRetry()
         {
             this.fileSystemProvider.DeleteTestResultFiles();
+
+            this.log.InfoFormat("Iteration #1  - First call to MsText.exe");
             this.processExecutionProvider.ExecuteProcessWithAdditionalArguments();
             this.processExecutionProvider.CurrentProcessWaitForExit();
-            var testRun = this.fileSystemProvider.DeserializeTestRun();
-            int areAllTestsGreen = 0;
-            var failedTests = new List<TestRunUnitTestResult>();
-            failedTests = this.microsoftTestTestRunProvider.GetAllNotPassedTests(testRun.Results.ToList());
-            int failedTestsPercentage = this.microsoftTestTestRunProvider.CalculatedFailedTestsPercentage(failedTests, testRun.Results.ToList());
-            if (failedTestsPercentage < this.consoleArgumentsProvider.FailedTestsThreshold)
+
+            var masterTestRun = this.fileSystemProvider.DeserializeTestRun();      
+      
+            var failedTests = new List<string>();
+            failedTests = this.microsoftTestTestRunProvider.GetNamesOfNotPassedTests(masterTestRun);
+
+            int failedTestsPercentage = this.microsoftTestTestRunProvider.CalculatedFailedTestsPercentage(masterTestRun);
+            if (failedTestsPercentage <= this.consoleArgumentsProvider.FailedTestsThreshold)
             {
-                for (int i = 0; i < this.consoleArgumentsProvider.RetriesCount - 1; i++)
+                for (int iteration = 0; iteration <= this.consoleArgumentsProvider.RetriesCount + 1; iteration++)
                 {
-                    this.log.InfoFormat("Start to execute again {0} failed tests.", failedTests.Count);
-                    if (failedTests.Count > 0)
-                    {
-                        string currentTestResultPath = this.fileSystemProvider.GetTempTrxFile();
-                        string retryRunArguments = this.microsoftTestTestRunProvider.GenerateAdditionalArgumentsForFailedTestsRun(failedTests, currentTestResultPath);
-                        this.log.InfoFormat("Run {0} time with arguments {1}", i + 2, retryRunArguments);
-                        this.processExecutionProvider.ExecuteProcessWithAdditionalArguments(retryRunArguments);
-                        this.processExecutionProvider.CurrentProcessWaitForExit();
-                        var currentTestRun = this.fileSystemProvider.DeserializeTestRun(currentTestResultPath);
-                        var passedTests = this.microsoftTestTestRunProvider.GetAllPassesTests(currentTestRun);
-                        this.microsoftTestTestRunProvider.UpdatePassedTests(passedTests, testRun.Results.ToList());
-                        this.microsoftTestTestRunProvider.UpdateResultsSummary(testRun);
-                    }
-                    else
+                    // If we made all test succeed, exit!
+                    if (failedTests.Count == 0)
                     {
                         break;
                     }
-                    failedTests = this.microsoftTestTestRunProvider.GetAllNotPassedTests(testRun.Results.ToList());
+
+                    this.log.InfoFormat("Iteration #{0,2} - Rerunning {1} failed tests.", iteration + 2, failedTests.Count);
+
+                    string currentTestResultPath = this.fileSystemProvider.GetTempTrxFile();
+                    string retryRunArguments = this.microsoftTestTestRunProvider.GenerateAdditionalArgumentsForFailedTestsRun(failedTests, currentTestResultPath);    
+                    this.log.InfoFormat("\tMsTest.exe Arguments : {0}", retryRunArguments);
+
+                    this.processExecutionProvider.ExecuteProcessWithAdditionalArguments(retryRunArguments);
+                    this.processExecutionProvider.CurrentProcessWaitForExit();
+                        
+                    var currentTestRun = this.fileSystemProvider.DeserializeTestRun(currentTestResultPath);
+
+                    this.microsoftTestTestRunProvider.UpdateMasterRunWithNewIteration(iteration, masterTestRun, currentTestRun);
+
+                    failedTests = this.microsoftTestTestRunProvider.GetNamesOfNotPassedTests(currentTestRun);
                 }
             }
-            if (failedTests.Count > 0)
-            {
-                areAllTestsGreen = 1;
-            }
-            this.fileSystemProvider.SerializeTestRun(testRun);
 
-            return areAllTestsGreen;
+            this.fileSystemProvider.SerializeTestRun(masterTestRun);
+
+            int returnCode = failedTests.Count > 0 ? 1 : 0;
+            return returnCode;
         }
     }
 }
