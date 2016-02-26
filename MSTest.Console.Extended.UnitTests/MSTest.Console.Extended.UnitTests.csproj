@@ -92,9 +92,9 @@
       <Project>{14b324be-3a19-4561-9909-16bd2685cfcd}</Project>
       <Name>MSTest.Console.Extended</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MsText.TRX\MsText.TRX.csproj">
+    <ProjectReference Include="..\MsText.TRX\MSTest.Console.Extended.TRX.csproj">
       <Project>{29a35697-ea9e-4e9a-8b15-76cd7e67d6c2}</Project>
-      <Name>MsText.TRX</Name>
+      <Name>MSTest.Console.Extended.TRX</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

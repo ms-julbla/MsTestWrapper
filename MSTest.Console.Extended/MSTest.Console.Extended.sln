@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSTest.Console.Extended", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSTest.Console.Extended.UnitTests", "..\MSTest.Console.Extended.UnitTests\MSTest.Console.Extended.UnitTests.csproj", "{E50B59CB-ED17-42E0-81F5-6CD74360C6D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsText.TRX", "..\MsText.TRX\MsText.TRX.csproj", "{29A35697-EA9E-4E9A-8B15-76CD7E67D6C2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSTest.Console.Extended.TRX", "..\MsText.TRX\MSTest.Console.Extended.TRX.csproj", "{29A35697-EA9E-4E9A-8B15-76CD7E67D6C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
