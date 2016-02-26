@@ -37,9 +37,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net">
-      <HintPath>packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -51,51 +48,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\TestRunResultSummaryOutput.cs" />
-    <Compile Include="Data\TestRunResultSummaryRunInfos.cs" />
-    <Compile Include="Data\TestRunResultSummaryRunInfosRunInfo.cs" />
-    <Compile Include="Data\TestRunUnitTestResultOutput.cs" />
-    <Compile Include="Data\TestRunUnitTestResultOutputErrorInfo.cs" />
-    <Compile Include="Data\TestRunUnitTestOwners.cs" />
-    <Compile Include="Data\UnitTestOwnersOwner.cs" />
-    <Compile Include="Data\TestRunUnitTestTestCategory.cs" />
-    <Compile Include="Data\UnitTestTestCategoryTestCategoryItem.cs" />
-    <Compile Include="Infrastructure\ConsoleArgumentsProvider.cs" />
-    <Compile Include="Infrastructure\FileSystemProvider.cs" />
-    <Compile Include="Infrastructure\ProcessExecutionProvider.cs" />
-    <Compile Include="Interfaces\IConsoleArgumentsProvider.cs" />
-    <Compile Include="Interfaces\IFileSystemProvider.cs" />
-    <Compile Include="Interfaces\IProcessExecutionProvider.cs" />
-    <Compile Include="Services\TestExecutionService.cs" />
-    <Compile Include="Data\TestRun.cs" />
-    <Compile Include="Data\TestRunResultSummary.cs" />
-    <Compile Include="Data\TestRunResultSummaryCounters.cs" />
-    <Compile Include="Data\TestRunTestEntry.cs" />
-    <Compile Include="Data\TestRunTestList.cs" />
-    <Compile Include="Data\TestRunTestSettings.cs" />
-    <Compile Include="Data\TestRunTestSettingsDeployment.cs" />
-    <Compile Include="Data\TestRunTestSettingsExecution.cs" />
-    <Compile Include="Data\TestRunTestSettingsExecutionAgentRule.cs" />
-    <Compile Include="Data\TestRunTimes.cs" />
-    <Compile Include="Data\TestRunUnitTest.cs" />
-    <Compile Include="Data\TestRunUnitTestExecution.cs" />
-    <Compile Include="Data\TestRunUnitTestResult.cs" />
-    <Compile Include="Data\TestRunUnitTestTestMethod.cs" />
-    <Compile Include="Infrastructure\MsTestTestRunProvider.cs" />
-    <Compile Include="Interfaces\IMsTestTestRunProvider.cs" />
+    <Compile Include="Managers\ConsoleArgumentsManager.cs" />
+    <Compile Include="Utilities\FileSystemTools.cs" />
+    <Compile Include="Managers\MsTestProcessManager.cs" />
+    <Compile Include="TestExecutionService.cs" />
+    <Compile Include="Managers\TestRunManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="log4net.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\MsText.TRX\MsText.TRX.csproj">
+      <Project>{29a35697-ea9e-4e9a-8b15-76cd7e67d6c2}</Project>
+      <Name>MsText.TRX</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
