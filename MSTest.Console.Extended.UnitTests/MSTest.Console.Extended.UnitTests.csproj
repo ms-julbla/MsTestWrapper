@@ -40,9 +40,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net">
-      <HintPath>..\MSTest.Console.Extended\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -94,6 +91,10 @@
     <ProjectReference Include="..\MSTest.Console.Extended\MSTest.Console.Extended.csproj">
       <Project>{14b324be-3a19-4561-9909-16bd2685cfcd}</Project>
       <Name>MSTest.Console.Extended</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsText.TRX\MsText.TRX.csproj">
+      <Project>{29a35697-ea9e-4e9a-8b15-76cd7e67d6c2}</Project>
+      <Name>MsText.TRX</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

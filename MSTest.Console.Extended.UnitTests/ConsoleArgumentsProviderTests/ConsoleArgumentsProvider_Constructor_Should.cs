@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MSTest.Console.Extended.Infrastructure;
+using MSTest.Console.Extended.Managers;
 
 namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
 {
@@ -20,7 +20,7 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 "/deleteOldResultsFiles:true",
                 @"/newResultsfile:C:\ResultsNew.trx"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
             Assert.AreEqual<int>(3, consoleArgumentsProvider.RetriesCount);
         }
 
@@ -36,7 +36,7 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 "/deleteOldResultsFiles:true",
                 @"/newResultsfile:C:\ResultsNew.trx"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
             Assert.AreEqual<int>(0, consoleArgumentsProvider.RetriesCount);
         }
 
@@ -53,7 +53,7 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 "/deleteOldResultsFiles:true",
                 @"/newResultsfile:C:\ResultsNew.trx"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
             Assert.AreEqual<string>(@"C:\Results.trx", consoleArgumentsProvider.TestResultPath);
         }
 
@@ -70,7 +70,7 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 "/deleteOldResultsFiles:true",
                 @"/newResultsfile:C:\ResultsNew.trx"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
             Assert.AreEqual<string>(@"C:\Results_FF.trx", consoleArgumentsProvider.TestResultPath);
         }
 
@@ -87,7 +87,7 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 "/deleteOldResultsFiles:true",
                 @"/newResultsfile:C:\ResultsNew.trx"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
             Assert.AreEqual<string>(@"C:\Results1.trx", consoleArgumentsProvider.TestResultPath);
         }
 
@@ -104,7 +104,7 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 "/deleteOldResultsFiles:true",
                 @"/newResultsfile:C:\ResultsNew.trx"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
             Assert.AreEqual<string>(@"C:\Results1.trx", consoleArgumentsProvider.TestResultPath);
         }
 
@@ -120,7 +120,7 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 "/retriesCount:3",
                 "/deleteOldResultsFiles:true"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
             Assert.AreEqual<string>(@"C:\Results.trx", consoleArgumentsProvider.TestResultPath);
         }
 
@@ -137,7 +137,7 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 "/deleteOldResultsFiles:true",
                 @"/newResultsfile:C:\ResultsNew.trx"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
             Assert.AreEqual<string>(@"C:\ResultsNew.trx", consoleArgumentsProvider.NewTestResultPath);
         }
 
@@ -154,7 +154,7 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 "/deleteOldResultsFiles:true",
                 @"/newResultsfile:C:\Results_New.trx"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
             Assert.AreEqual<string>(@"C:\Results_New.trx", consoleArgumentsProvider.NewTestResultPath);
         }
 
@@ -171,7 +171,7 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 "/deleteOldResultsFiles:true",
                 @"/newResultsfile:C:\ResultsNew1.trx"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
             Assert.AreEqual<string>(@"C:\ResultsNew1.trx", consoleArgumentsProvider.NewTestResultPath);
         }
 
@@ -188,7 +188,7 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 "/deleteOldResultsFiles:true",
                 @"/newResultsfile:C:\ResultsNew1.trx"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
             Assert.AreEqual<bool>(true, consoleArgumentsProvider.ShouldDeleteOldTestResultFiles);
         }
 
@@ -204,7 +204,7 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 "/retriesCount:3",
                 @"/newResultsfile:C:\ResultsNew1.trx"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
             Assert.AreEqual<bool>(false, consoleArgumentsProvider.ShouldDeleteOldTestResultFiles);
         }
 
@@ -221,8 +221,9 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 "/deleteOldResultsFiles:true",
                 @"/newResultsfile:C:\ResultsNew1.trx"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
-            Assert.IsFalse(consoleArgumentsProvider.ConsoleArguments.Contains("/deleteOldResultsFiles:true"));
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
+            Assert.IsFalse(consoleArgumentsProvider.InitialConsoleArguments.Contains("/deleteOldResultsFiles:true"));
+            Assert.IsFalse(consoleArgumentsProvider.BaseConsoleArguments.Contains("/deleteOldResultsFiles:true"));
         }
 
         [TestMethod]
@@ -238,8 +239,9 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 "/deleteOldResultsFiles:true",
                 @"/newResultsfile:C:\ResultsNew1.trx"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
-            Assert.IsFalse(consoleArgumentsProvider.ConsoleArguments.Contains("/retriesCount:3"));
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
+            Assert.IsFalse(consoleArgumentsProvider.InitialConsoleArguments.Contains("/retriesCount:3"));
+            Assert.IsFalse(consoleArgumentsProvider.BaseConsoleArguments.Contains("/retriesCount:3"));
         }
 
         [TestMethod]
@@ -255,8 +257,9 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 "/deleteOldResultsFiles:true",
                 @"/newResultsfile:C:\ResultsNew1.trx"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
-            Assert.IsFalse(consoleArgumentsProvider.ConsoleArguments.Contains(@"/newResultsfile:C:\ResultsNew1.trx"));
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
+            Assert.IsFalse(consoleArgumentsProvider.InitialConsoleArguments.Contains(@"/newResultsfile:C:\ResultsNew1.trx"));
+            Assert.IsFalse(consoleArgumentsProvider.BaseConsoleArguments.Contains(@"/newResultsfile:C:\ResultsNew1.trx"));
         }
 
         [TestMethod]
@@ -272,8 +275,8 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 "/deleteOldResultsFiles:true",
                 @"/newResultsfile:C:\Results New1.trx"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
-            Assert.IsTrue(consoleArgumentsProvider.ConsoleArguments.Contains(@"/newResultsfile:""C:\Results New1.trx"""));
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
+            Assert.IsTrue(consoleArgumentsProvider.InitialConsoleArguments.Contains(@"/newResultsfile:""C:\Results New1.trx"""));
         }
 
         [TestMethod]
@@ -290,7 +293,7 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 @"/newResultsfile:C:\ResultsNew.trx",
                 "/threshold:5"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
             Assert.AreEqual<int>(5, consoleArgumentsProvider.FailedTestsThreshold);
         }
 
@@ -306,7 +309,7 @@ namespace MSTest.Console.Extended.UnitTests.ConsoleArgumentsProviderTests
                 "/deleteOldResultsFiles:true",
                 @"/newResultsfile:C:\ResultsNew.trx"
             };
-            var consoleArgumentsProvider = new ConsoleArgumentsProvider(args);
+            var consoleArgumentsProvider = new ConsoleArgumentsManager(args);
             Assert.AreEqual<int>(10, consoleArgumentsProvider.FailedTestsThreshold);
         }
     }

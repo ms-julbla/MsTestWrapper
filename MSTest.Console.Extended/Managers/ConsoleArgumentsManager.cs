@@ -28,9 +28,16 @@ namespace MSTest.Console.Extended.Managers
             this.ExtractDeleteOldResultFiles(); 
         }
 
-        public string InitialConsoleArguments { get; private set; }
-
         public string BaseConsoleArguments { get; private set; }
+        private string InitialTestSpecifiers { get; set; }
+        
+        public string InitialConsoleArguments
+        {
+            get
+            {
+                return string.Format("{0} {1}", BaseConsoleArguments, InitialTestSpecifiers);
+            }
+        }
         
         public string TestResultPath { get; private set; }
 
@@ -64,7 +71,7 @@ namespace MSTest.Console.Extended.Managers
             else
             {
                 this.NewTestResultPath = currentMatch.Groups["NewResultsFilePath"].Value;
-                this.InitialConsoleArguments = this.InitialConsoleArguments.Replace(currentMatch.Groups["NewResultsFilePathArgument"].Value, string.Empty);
+                this.BaseConsoleArguments = this.InitialConsoleArguments.Replace(currentMatch.Groups["NewResultsFilePathArgument"].Value, string.Empty);
             }
         }
 
@@ -79,7 +86,7 @@ namespace MSTest.Console.Extended.Managers
             else
             {
                 this.RetriesCount = int.Parse(currentMatch.Groups["RetriesCount"].Value);
-                this.InitialConsoleArguments = this.InitialConsoleArguments.Replace(currentMatch.Groups["RetriesArgument"].Value, string.Empty);
+                this.BaseConsoleArguments = this.InitialConsoleArguments.Replace(currentMatch.Groups["RetriesArgument"].Value, string.Empty);
             }
         }
 
@@ -94,7 +101,7 @@ namespace MSTest.Console.Extended.Managers
             else
             {
                 this.FailedTestsThreshold = int.Parse(currentMatch.Groups["ThresholdCount"].Value);
-                this.InitialConsoleArguments = this.InitialConsoleArguments.Replace(currentMatch.Groups["ThresholdArgument"].Value, string.Empty);
+                this.BaseConsoleArguments = this.InitialConsoleArguments.Replace(currentMatch.Groups["ThresholdArgument"].Value, string.Empty);
             }
         }
 
@@ -109,7 +116,7 @@ namespace MSTest.Console.Extended.Managers
             else
             {
                 this.ShouldDeleteOldTestResultFiles = bool.Parse(currentMatch.Groups["DeleteOldFilesValue"].Value);
-                this.InitialConsoleArguments = this.InitialConsoleArguments.Replace(currentMatch.Groups["DeleteOldFilesArgument"].Value, string.Empty);
+                this.BaseConsoleArguments = this.InitialConsoleArguments.Replace(currentMatch.Groups["DeleteOldFilesArgument"].Value, string.Empty);
             }
         }
 
@@ -144,7 +151,7 @@ namespace MSTest.Console.Extended.Managers
             }
 
             this.BaseConsoleArguments = baseArgs.ToString().TrimEnd();
-            this.InitialConsoleArguments = baseArgs.Append(testSpecifierArgs.ToString()).ToString();
+            this.InitialTestSpecifiers = testSpecifierArgs.ToString().TrimEnd();
         }
 
         private KeyValuePair<string, string> SplitArgumentNameAndValue(string argument)
